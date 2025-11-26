@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Toko Saurus Official</title>
+<style>
+  body { font-family: Arial; padding: 20px; }
+
+  .product {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+  }
+  button {
+    padding: 10px 15px;
+    border: none;
+    background: #25D366;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .maintenance {
+    font-size: 28px;
+    text-align: center;
+    margin-top: 50px;
+  }
+</style>
+</head>
+<body>
+
+<div id="content"></div>
+
+<script>
+async function loadData() {
+  const setRes = await fetch("/api/setting");
+  const setting = await setRes.json();
+
+  if (setting.status === "off") {
+    document.getElementById("content").innerHTML =
+      `<div class="maintenance">🔧 Website sedang diperbaiki...</div>`;
+    return;
+  }
+
+  const res = await fetch("/api/products");
+  const data = await res.json();
+  let html = "<h1>Daftar Produk</h1>";
+
+  data.forEach(p => {
+    html += `
+      <div class="product">
+        <h3>${p.name}</h3>
+        <p>Harga: Rp${p.price}</p>
+        <p>${p.desc}</p>
+        <button onclick="beli('${p.name}','${p.price}')">Beli Sekarang</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function beli(nama, harga) {
+  const wa = "62895393336779";
+  const url = `https://wa.me/${wa}?text=Bang mau beli%0A*${nama}*%0A${harga}%0Akode diskon: (isi kalau ada)`;
+  window.location.href = url;
+}
+
+loadData();
+</script>
+</body>
+</html>
